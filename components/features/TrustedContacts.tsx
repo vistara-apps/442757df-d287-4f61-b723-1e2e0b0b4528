@@ -19,13 +19,14 @@ export function TrustedContacts({ contacts, onContactsChange }: TrustedContactsP
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    email: ''
+    email: '',
+    relationship: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleAddContact = () => {
     setEditingContact(null);
-    setFormData({ name: '', phone: '', email: '' });
+    setFormData({ name: '', phone: '', email: '', relationship: '' });
     setErrors({});
     setShowModal(true);
   };
@@ -35,7 +36,8 @@ export function TrustedContacts({ contacts, onContactsChange }: TrustedContactsP
     setFormData({
       name: contact.name,
       phone: contact.phone,
-      email: contact.email || ''
+      email: contact.email || '',
+      relationship: contact.relationship
     });
     setErrors({});
     setShowModal(true);
@@ -63,6 +65,10 @@ export function TrustedContacts({ contacts, onContactsChange }: TrustedContactsP
       newErrors.email = 'Please enter a valid email address';
     }
 
+    if (!formData.relationship.trim()) {
+      newErrors.relationship = 'Relationship is required';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -74,7 +80,8 @@ export function TrustedContacts({ contacts, onContactsChange }: TrustedContactsP
       id: editingContact?.id || Date.now().toString(),
       name: formData.name.trim(),
       phone: formData.phone.trim(),
-      email: formData.email.trim() || undefined
+      email: formData.email.trim() || undefined,
+      relationship: formData.relationship.trim()
     };
 
     let updatedContacts;
@@ -210,6 +217,22 @@ export function TrustedContacts({ contacts, onContactsChange }: TrustedContactsP
             />
             {errors.email && (
               <p className="text-red-300 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              Relationship *
+            </label>
+            <input
+              type="text"
+              value={formData.relationship}
+              onChange={(e) => setFormData({ ...formData, relationship: e.target.value })}
+              className="w-full px-3 py-2 bg-white bg-opacity-10 border border-white border-opacity-30 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., Spouse, Parent, Friend"
+            />
+            {errors.relationship && (
+              <p className="text-red-300 text-sm mt-1">{errors.relationship}</p>
             )}
           </div>
 
