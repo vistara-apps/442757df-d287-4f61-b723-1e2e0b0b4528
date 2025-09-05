@@ -177,7 +177,7 @@ export function RightsCards({ userState }: RightsCardsProps) {
             label="Content"
             variant="textarea"
             value={newCardContent}
-            onChange={(e) => setNewCardContent(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewCardContent(e.target.value)}
             placeholder="Enter the key rights and information you want to share..."
             rows={4}
           />

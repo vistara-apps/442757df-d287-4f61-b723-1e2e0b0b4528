@@ -81,5 +81,42 @@ Say: "I'm exercising my right to remain silent. I do not consent to any searches
 
 Say: "I'm exercising my right to remain silent. I want to speak to a lawyer. Am I free to leave?"`,
     summary: 'You can remain silent during police questioning and ask for a lawyer at any time.'
+  },
+  search_request: {
+    title: 'Search Request Rights',
+    script: `When asked to consent to a search, you have the right to:
+    
+• Refuse consent to search your person, belongings, or property
+• Ask if you're being detained or if you're free to leave
+• Remain silent during the interaction
+• Request to see a warrant if they claim to have one
+
+Say: "I do not consent to any searches. Am I being detained or am I free to leave?"`,
+    summary: 'You can refuse consent to searches and ask if you are being detained.'
+  },
+  arrest: {
+    title: 'Arrest Situation Rights',
+    script: `If you are being arrested, you have the right to:
+    
+• Remain silent (anything you say can be used against you)
+• Ask for a lawyer immediately
+• Refuse to answer questions without a lawyer present
+• Make one phone call (in most jurisdictions)
+
+Say: "I'm exercising my right to remain silent. I want to speak to a lawyer."`,
+    summary: 'During an arrest, remain silent and immediately request a lawyer.'
+  },
+  general_rights: {
+    title: 'General Legal Rights',
+    script: `Your fundamental rights during police encounters:
+    
+• Right to remain silent (5th Amendment)
+• Right to refuse consent to searches (4th Amendment)
+• Right to ask if you're free to leave
+• Right to record police interactions (in public spaces)
+• Right to a lawyer if arrested
+
+Remember: Stay calm, be respectful, but know your rights.`,
+    summary: 'Know your constitutional rights during any police encounter.'
   }
 };
