@@ -1,81 +1,40 @@
-export const LEGAL_SCENARIOS = [
+import { ScenarioOption } from './types';
+
+export const LEGAL_SCENARIOS: ScenarioOption[] = [
   {
-    id: 'traffic-stop',
+    id: 'traffic_stop',
     title: 'Traffic Stop',
     description: 'Pulled over by police',
     icon: '🚗',
-    scripts: {
-      whatToSay: [
-        'I am exercising my right to remain silent.',
-        'I do not consent to any searches.',
-        'Am I free to go?',
-        'I would like to speak to a lawyer.'
-      ],
-      whatNotToSay: [
-        'Don\'t admit guilt or fault',
-        'Don\'t argue or resist',
-        'Don\'t consent to searches',
-        'Don\'t provide information beyond required documents'
-      ],
-      keyRights: [
-        'Right to remain silent',
-        'Right to refuse consent to search',
-        'Right to ask if you\'re free to go',
-        'Right to an attorney'
-      ]
-    }
+    urgency: 'high'
   },
   {
-    id: 'police-questioning',
+    id: 'questioning',
     title: 'Police Questioning',
     description: 'Being questioned by officers',
-    icon: '👮',
-    scripts: {
-      whatToSay: [
-        'I am invoking my Fifth Amendment right to remain silent.',
-        'I want to speak to a lawyer before answering questions.',
-        'Am I under arrest or am I free to go?',
-        'I do not consent to any searches.'
-      ],
-      whatNotToSay: [
-        'Don\'t answer questions without a lawyer',
-        'Don\'t make statements about your activities',
-        'Don\'t try to explain or justify anything',
-        'Don\'t consent to searches'
-      ],
-      keyRights: [
-        'Fifth Amendment right against self-incrimination',
-        'Right to an attorney',
-        'Right to know if you\'re under arrest',
-        'Right to refuse consent to search'
-      ]
-    }
+    icon: '❓',
+    urgency: 'high'
   },
   {
-    id: 'home-search',
-    title: 'Home Search',
-    description: 'Police at your door',
-    icon: '🏠',
-    scripts: {
-      whatToSay: [
-        'I do not consent to a search.',
-        'Do you have a warrant?',
-        'I am exercising my right to remain silent.',
-        'I want to speak to a lawyer.'
-      ],
-      whatNotToSay: [
-        'Don\'t let them in without a warrant',
-        'Don\'t consent to searches',
-        'Don\'t answer questions about who lives there',
-        'Don\'t provide information about others'
-      ],
-      keyRights: [
-        'Fourth Amendment protection against unreasonable searches',
-        'Right to see a warrant',
-        'Right to refuse consent',
-        'Right to remain silent'
-      ]
-    }
+    id: 'search_request',
+    title: 'Search Request',
+    description: 'Officer wants to search you/property',
+    icon: '🔍',
+    urgency: 'high'
+  },
+  {
+    id: 'arrest',
+    title: 'Arrest Situation',
+    description: 'Being arrested or detained',
+    icon: '⚖️',
+    urgency: 'high'
+  },
+  {
+    id: 'general_rights',
+    title: 'Know Your Rights',
+    description: 'General legal rights information',
+    icon: '📋',
+    urgency: 'low'
   }
 ];
 
@@ -92,9 +51,35 @@ export const US_STATES = [
   'West Virginia', 'Wisconsin', 'Wyoming'
 ];
 
-export const EMERGENCY_MESSAGES = {
-  default: "🚨 EMERGENCY: I may need assistance. My location and time are attached. Please check on me if you don't hear from me soon.",
-  traffic: "🚗 I've been pulled over by police. Location and time attached. Will update you soon.",
-  questioning: "👮 I'm being questioned by police. Location attached. May need legal assistance.",
-  home: "🏠 Police are at my location. Time and address attached. Please be aware of my situation."
+export const EMERGENCY_ALERT_TEMPLATE = {
+  subject: '🚨 Emergency Alert from Pocket Justice',
+  message: (name: string, location: string) => 
+    `${name} has activated an emergency alert. Location: ${location}. Time: ${new Date().toLocaleString()}. This is an automated message from Pocket Justice app.`
+};
+
+export const SAMPLE_LEGAL_CONTENT = {
+  traffic_stop: {
+    title: 'Traffic Stop Rights',
+    script: `Stay calm and keep your hands visible. You have the right to:
+    
+• Remain silent beyond providing license, registration, and insurance
+• Refuse consent to search your vehicle
+• Ask "Am I free to leave?" if not under arrest
+• Record the interaction (where legal)
+
+Say: "I'm exercising my right to remain silent. I do not consent to any searches."`,
+    summary: 'During a traffic stop, you must provide required documents but can remain silent and refuse searches.'
+  },
+  questioning: {
+    title: 'Police Questioning Rights',
+    script: `You have the right to:
+    
+• Remain completely silent
+• Ask for a lawyer
+• Leave if you're not being detained
+• Record the interaction (in public spaces)
+
+Say: "I'm exercising my right to remain silent. I want to speak to a lawyer. Am I free to leave?"`,
+    summary: 'You can remain silent during police questioning and ask for a lawyer at any time.'
+  }
 };

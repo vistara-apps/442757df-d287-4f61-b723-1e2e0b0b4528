@@ -1,17 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { ModalProps } from '@/lib/types';
 import { cn } from '@/lib/utils';
-
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  variant?: 'default' | 'fullscreen';
-  className?: string;
-}
+import { X } from 'lucide-react';
+import { useEffect } from 'react';
 
 export function Modal({
   isOpen,
@@ -33,7 +25,28 @@ export function Modal({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
+
+  const variants = {
+    default: 'max-w-md mx-4',
+    fullscreen: 'w-full h-full max-w-none mx-0 rounded-none'
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -45,8 +58,8 @@ export function Modal({
       
       {/* Modal */}
       <div className={cn(
-        'relative bg-gradient-to-br from-blue-900 to-purple-900 rounded-xl shadow-modal border border-white border-opacity-20 max-h-[90vh] overflow-y-auto',
-        variant === 'fullscreen' ? 'w-full h-full m-4' : 'w-full max-w-md mx-4',
+        'relative bg-gradient-to-br from-blue-900 to-purple-900 border border-white border-opacity-20 rounded-lg shadow-modal max-h-[90vh] overflow-y-auto',
+        variants[variant],
         className
       )}>
         {/* Header */}
@@ -55,15 +68,15 @@ export function Modal({
             <h2 className="text-xl font-semibold text-white">{title}</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white hover:bg-opacity-10 rounded-full transition-colors duration-200"
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors duration-200"
             >
-              <X size={20} className="text-white" />
+              <X className="w-5 h-5 text-white" />
             </button>
           </div>
         )}
         
         {/* Content */}
-        <div className="p-6">
+        <div className={title ? 'p-6' : 'p-6'}>
           {children}
         </div>
       </div>

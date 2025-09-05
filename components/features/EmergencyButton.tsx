@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertTriangle, Phone, Video, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { Modal } from '@/components/ui/Modal';
 import { AlertBanner } from '@/components/ui/AlertBanner';
+import { Phone, Video, AlertTriangle } from 'lucide-react';
 
 interface EmergencyButtonProps {
   onEmergencyActivated: () => void;
@@ -13,133 +11,108 @@ interface EmergencyButtonProps {
 
 export function EmergencyButton({ onEmergencyActivated }: EmergencyButtonProps) {
   const [isRecording, setIsRecording] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [alertSent, setAlertSent] = useState(false);
-  const [recordingType, setRecordingType] = useState<'audio' | 'video'>('audio');
+  const [isActivating, setIsActivating] = useState(false);
 
-  const handleEmergencyStart = () => {
-    setShowModal(true);
-  };
-
-  const handleStartRecording = async (type: 'audio' | 'video') => {
-    setRecordingType(type);
-    setIsRecording(true);
+  const handleEmergencyActivation = async () => {
+    setIsActivating(true);
     
-    // Simulate recording start
     try {
-      // In a real app, this would start actual recording
-      console.log(`Starting ${type} recording...`);
+      // Start recording (mock implementation)
+      setIsRecording(true);
       
-      // Send emergency alert
-      await sendEmergencyAlert();
+      // Send alert to trusted contacts (mock implementation)
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setAlertSent(true);
+      
+      // Notify parent component
       onEmergencyActivated();
       
     } catch (error) {
-      console.error('Failed to start emergency recording:', error);
+      console.error('Emergency activation failed:', error);
+    } finally {
+      setIsActivating(false);
     }
   };
 
-  const handleStopRecording = () => {
+  const stopRecording = () => {
     setIsRecording(false);
-    setShowModal(false);
-    console.log('Recording stopped and saved');
+    setAlertSent(false);
   };
 
-  const sendEmergencyAlert = async () => {
-    // Simulate sending alert to trusted contacts
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log('Emergency alert sent to trusted contacts');
-        resolve(true);
-      }, 1000);
-    });
-  };
+  if (isRecording) {
+    return (
+      <div className="space-y-4">
+        <AlertBanner
+          variant="error"
+          title="Emergency Mode Active"
+          message="Recording in progress. Trusted contacts have been notified."
+        />
+        
+        <div className="flex items-center justify-center space-x-4">
+          <div className="flex items-center space-x-2 text-red-300">
+            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">Recording</span>
+          </div>
+          
+          <Button
+            variant="secondary"
+            onClick={stopRecording}
+            className="bg-red-500 bg-opacity-20 hover:bg-opacity-30"
+          >
+            Stop Recording
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      {/* Emergency Button */}
-      <div className="fixed bottom-6 right-6 z-40">
+    <div className="space-y-4">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-white mb-2">Emergency Actions</h3>
+        <p className="text-sm text-white text-opacity-80 mb-6">
+          Tap to start discreet recording and alert your trusted contacts
+        </p>
+      </div>
+
+      <Button
+        variant="danger"
+        size="lg"
+        onClick={handleEmergencyActivation}
+        loading={isActivating}
+        className="w-full py-6 text-lg font-bold"
+      >
+        <AlertTriangle className="w-6 h-6 mr-3" />
+        Record & Alert Now
+      </Button>
+
+      <div className="grid grid-cols-2 gap-4">
         <Button
-          variant="danger"
-          size="lg"
-          onClick={handleEmergencyStart}
-          className={`rounded-full w-16 h-16 p-0 shadow-2xl ${isRecording ? 'animate-pulse' : ''}`}
+          variant="secondary"
+          onClick={() => {/* Mock call emergency contact */}}
+          className="flex items-center justify-center space-x-2"
         >
-          <AlertTriangle size={24} />
+          <Phone className="w-5 h-5" />
+          <span>Call Contact</span>
+        </Button>
+        
+        <Button
+          variant="secondary"
+          onClick={() => {/* Mock video recording */}}
+          className="flex items-center justify-center space-x-2"
+        >
+          <Video className="w-5 h-5" />
+          <span>Video Only</span>
         </Button>
       </div>
 
-      {/* Emergency Modal */}
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title="Emergency Recording & Alert"
-      >
-        <div className="space-y-6">
-          {alertSent && (
-            <AlertBanner
-              variant="success"
-              message="Emergency alert sent to your trusted contacts!"
-            />
-          )}
-
-          {!isRecording ? (
-            <div className="space-y-4">
-              <p className="text-white text-center mb-6">
-                Choose recording type and we'll immediately alert your trusted contacts:
-              </p>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <Card 
-                  className="p-4 text-center cursor-pointer"
-                  onClick={() => handleStartRecording('audio')}
-                >
-                  <Mic size={32} className="mx-auto mb-2 text-blue-300" />
-                  <p className="text-sm font-medium">Audio Only</p>
-                  <p className="text-xs text-gray-300 mt-1">Discreet recording</p>
-                </Card>
-                
-                <Card 
-                  className="p-4 text-center cursor-pointer"
-                  onClick={() => handleStartRecording('video')}
-                >
-                  <Video size={32} className="mx-auto mb-2 text-blue-300" />
-                  <p className="text-sm font-medium">Video</p>
-                  <p className="text-xs text-gray-300 mt-1">Full documentation</p>
-                </Card>
-              </div>
-
-              <div className="mt-6 p-4 bg-yellow-500 bg-opacity-20 rounded-lg border border-yellow-400">
-                <p className="text-yellow-100 text-sm">
-                  <strong>Important:</strong> Recording laws vary by state. Ensure you understand your local laws regarding recording interactions.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center space-y-6">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                <p className="text-white font-medium">
-                  Recording {recordingType}...
-                </p>
-              </div>
-              
-              <div className="text-6xl animate-pulse">
-                {recordingType === 'audio' ? <Mic /> : <Video />}
-              </div>
-              
-              <Button
-                variant="secondary"
-                onClick={handleStopRecording}
-                className="w-full"
-              >
-                Stop Recording & Save
-              </Button>
-            </div>
-          )}
-        </div>
-      </Modal>
-    </>
+      {alertSent && (
+        <AlertBanner
+          variant="success"
+          message="Emergency alert sent to your trusted contacts successfully."
+        />
+      )}
+    </div>
   );
 }

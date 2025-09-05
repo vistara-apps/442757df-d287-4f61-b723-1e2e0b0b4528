@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "Pocket Justice",
+    "subtitle": "Built with Zara",
+    "description": "Pocket Justice is a Base Mini App built with Zara.",
+    "iconUrl": "https://0co.to/images/zara-2.png",
+    "homeUrl": "https://442757df-d287-4f61-b723-1e2e0b0b4528.vercel.app",
+    "splashImageUrl": "https://dummyimage.com/200x200/0a0b0d/ffffff.png&text=Splash",
+    "splashBackgroundColor": "#000000",
+    "heroImageUrl": "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=Hero",
+    "tagline": "Pocket Justice",
+    "screenshotUrls": [
+      "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=Shot1",
+      "https://dummyimage.com/1200x628/0a0b0d/ffffff.png&text=Shot2"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "base",
+      "miniapp",
+      "onchainkit"
+    ],
+    "webhookUrl": "https://442757df-d287-4f61-b723-1e2e0b0b4528.vercel.app/api/webhook"
+  }
+}

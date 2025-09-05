@@ -1,152 +1,194 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronRight, MapPin, BookOpen, Share2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
-import { LEGAL_SCENARIOS } from '@/lib/constants';
+import { AlertBanner } from '@/components/ui/AlertBanner';
+import { LEGAL_SCENARIOS, SAMPLE_LEGAL_CONTENT } from '@/lib/constants';
+import { generateLegalScript } from '@/lib/openai';
 import { LegalScenario } from '@/lib/types';
+import { MapPin, Clock, Share2, BookOpen } from 'lucide-react';
 
 interface LegalScriptsProps {
-  userState?: string;
+  userState: string;
+  onScriptGenerated: (script: string) => void;
 }
 
-export function LegalScripts({ userState = 'California' }: LegalScriptsProps) {
+export function LegalScripts({ userState, onScriptGenerated }: LegalScriptsProps) {
   const [selectedScenario, setSelectedScenario] = useState<LegalScenario | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [generatedScript, setGeneratedScript] = useState<string>('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string>('');
 
-  const handleScenarioSelect = (scenario: LegalScenario) => {
-    setSelectedScenario(scenario);
-    setShowModal(true);
-  };
+  const handleScenarioSelect = async (scenarioId: LegalScenario) => {
+    setSelectedScenario(scenarioId);
+    setIsGenerating(true);
+    setError('');
 
-  const handleShare = () => {
-    if (selectedScenario) {
-      const shareText = `Know Your Rights: ${selectedScenario.title}\n\nKey Rights:\n${selectedScenario.scripts.keyRights.join('\n')}\n\nFrom Pocket Justice App`;
-      
-      if (navigator.share) {
-        navigator.share({
-          title: `Know Your Rights: ${selectedScenario.title}`,
-          text: shareText,
-        });
-      } else {
-        navigator.clipboard.writeText(shareText);
-        alert('Rights information copied to clipboard!');
+    try {
+      const scenario = LEGAL_SCENARIOS.find(s => s.id === scenarioId);
+      if (!scenario) throw new Error('Scenario not found');
+
+      // Try to generate with AI, fallback to sample content
+      let script = '';
+      try {
+        script = await generateLegalScript(scenario.title, userState);
+      } catch (aiError) {
+        console.warn('AI generation failed, using sample content:', aiError);
+        script = SAMPLE_LEGAL_CONTENT[scenarioId]?.script || 'Script not available for this scenario.';
       }
+
+      setGeneratedScript(script);
+      onScriptGenerated(script);
+    } catch (err) {
+      setError('Failed to load legal script. Please try again.');
+      console.error('Script generation error:', err);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
-  return (
-    <>
+  const shareScript = async () => {
+    if (!generatedScript) return;
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Legal Rights Script',
+          text: generatedScript
+        });
+      } else {
+        await navigator.clipboard.writeText(generatedScript);
+        // Show success message
+      }
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  };
+
+  if (selectedScenario && generatedScript) {
+    const scenario = LEGAL_SCENARIOS.find(s => s.id === selectedScenario);
+    
+    return (
       <div className="space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold text-white">Legal Scripts</h2>
-          <div className="flex items-center justify-center space-x-2 text-blue-200">
-            <MapPin size={16} />
-            <span className="text-sm">State: {userState}</span>
+        <div className="flex items-center justify-between">
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setSelectedScenario(null);
+              setGeneratedScript('');
+            }}
+          >
+            ← Back to Scenarios
+          </Button>
+          
+          <div className="flex items-center space-x-2 text-sm text-white text-opacity-80">
+            <MapPin className="w-4 h-4" />
+            <span>{userState}</span>
           </div>
         </div>
 
-        {/* Scenarios Grid */}
-        <div className="grid gap-4">
-          {LEGAL_SCENARIOS.map((scenario) => (
-            <Card
-              key={scenario.id}
-              className="p-4 cursor-pointer"
-              onClick={() => handleScenarioSelect(scenario)}
+        <Card className="p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="text-2xl">{scenario?.icon}</div>
+            <div>
+              <h3 className="text-lg font-semibold text-white">{scenario?.title}</h3>
+              <p className="text-sm text-white text-opacity-70">State-specific guidance for {userState}</p>
+            </div>
+          </div>
+
+          <div className="prose prose-invert max-w-none">
+            <div className="whitespace-pre-wrap text-white text-opacity-90 leading-relaxed">
+              {generatedScript}
+            </div>
+          </div>
+
+          <div className="flex space-x-3 mt-6">
+            <Button
+              variant="primary"
+              onClick={shareScript}
+              className="flex items-center space-x-2"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{scenario.icon}</span>
-                  <div>
-                    <h3 className="font-semibold text-white">{scenario.title}</h3>
-                    <p className="text-sm text-blue-200">{scenario.description}</p>
-                  </div>
-                </div>
-                <ChevronRight size={20} className="text-blue-300" />
-              </div>
-            </Card>
-          ))}
+              <Share2 className="w-4 h-4" />
+              <span>Share Script</span>
+            </Button>
+            
+            <Button
+              variant="secondary"
+              onClick={() => {/* Save to favorites */}}
+              className="flex items-center space-x-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Save</span>
+            </Button>
+          </div>
+        </Card>
+
+        <AlertBanner
+          variant="info"
+          title="Important Disclaimer"
+          message="This information is for educational purposes only and does not constitute legal advice. Laws vary by jurisdiction and situation."
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white mb-2">Legal Scripts</h2>
+        <p className="text-white text-opacity-80">
+          Get state-specific guidance for common legal situations
+        </p>
+        <div className="flex items-center justify-center space-x-2 mt-2 text-sm text-white text-opacity-70">
+          <MapPin className="w-4 h-4" />
+          <span>Currently showing scripts for {userState}</span>
         </div>
       </div>
 
-      {/* Scenario Detail Modal */}
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title={selectedScenario?.title}
-        variant="fullscreen"
-      >
-        {selectedScenario && (
-          <div className="space-y-6">
-            {/* What to Say */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-green-300 flex items-center">
-                <BookOpen size={20} className="mr-2" />
-                What to Say
-              </h3>
-              <div className="space-y-2">
-                {selectedScenario.scripts.whatToSay.map((script, index) => (
-                  <div key={index} className="p-3 bg-green-500 bg-opacity-20 rounded-lg border border-green-400">
-                    <p className="text-green-100">"{script}"</p>
-                  </div>
-                ))}
+      {error && (
+        <AlertBanner
+          variant="error"
+          message={error}
+          onClose={() => setError('')}
+        />
+      )}
+
+      <div className="grid gap-4">
+        {LEGAL_SCENARIOS.map((scenario) => (
+          <Card
+            key={scenario.id}
+            onClick={() => handleScenarioSelect(scenario.id)}
+            className="p-4 cursor-pointer hover:scale-105"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="text-3xl">{scenario.icon}</div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-white">{scenario.title}</h3>
+                <p className="text-sm text-white text-opacity-70">{scenario.description}</p>
+              </div>
+              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                scenario.urgency === 'high' 
+                  ? 'bg-red-500 bg-opacity-20 text-red-300'
+                  : scenario.urgency === 'medium'
+                  ? 'bg-yellow-500 bg-opacity-20 text-yellow-300'
+                  : 'bg-green-500 bg-opacity-20 text-green-300'
+              }`}>
+                {scenario.urgency}
               </div>
             </div>
+          </Card>
+        ))}
+      </div>
 
-            {/* What NOT to Say */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-red-300 flex items-center">
-                <BookOpen size={20} className="mr-2" />
-                What NOT to Say/Do
-              </h3>
-              <div className="space-y-2">
-                {selectedScenario.scripts.whatNotToSay.map((script, index) => (
-                  <div key={index} className="p-3 bg-red-500 bg-opacity-20 rounded-lg border border-red-400">
-                    <p className="text-red-100">• {script}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Key Rights */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-blue-300 flex items-center">
-                <BookOpen size={20} className="mr-2" />
-                Your Key Rights
-              </h3>
-              <div className="space-y-2">
-                {selectedScenario.scripts.keyRights.map((right, index) => (
-                  <div key={index} className="p-3 bg-blue-500 bg-opacity-20 rounded-lg border border-blue-400">
-                    <p className="text-blue-100">• {right}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex space-x-3 pt-4">
-              <Button
-                variant="secondary"
-                onClick={handleShare}
-                className="flex-1 flex items-center justify-center"
-              >
-                <Share2 size={16} className="mr-2" />
-                Share Rights
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => setShowModal(false)}
-                className="flex-1"
-              >
-                Got It
-              </Button>
-            </div>
+      {isGenerating && (
+        <div className="text-center py-8">
+          <div className="inline-flex items-center space-x-2 text-white text-opacity-80">
+            <div className="w-5 h-5 border-2 border-white border-opacity-30 border-t-white rounded-full animate-spin"></div>
+            <span>Generating personalized legal script...</span>
           </div>
-        )}
-      </Modal>
-    </>
+        </div>
+      )}
+    </div>
   );
 }

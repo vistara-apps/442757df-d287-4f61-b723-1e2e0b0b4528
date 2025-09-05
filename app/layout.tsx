@@ -8,9 +8,10 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Pocket Justice - Your rights, right in your pocket',
   description: 'A mobile app for non-technical users to quickly access legal scripts and documentation tools during encounters with law enforcement.',
-  keywords: 'legal rights, law enforcement, legal scripts, emergency recording, Base miniapp',
+  keywords: ['legal rights', 'law enforcement', 'mobile app', 'legal scripts', 'emergency'],
   authors: [{ name: 'Pocket Justice Team' }],
   viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#1e40af',
 };
 
 export default function RootLayout({

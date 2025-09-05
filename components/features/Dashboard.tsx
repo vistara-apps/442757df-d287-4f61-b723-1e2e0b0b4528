@@ -1,25 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Shield, Users, FileText, AlertTriangle, MapPin, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Shield, FileText, Users, TrendingUp } from 'lucide-react';
 
 interface DashboardProps {
-  onNavigate: (section: string) => void;
+  onGetHelpClick: () => void;
 }
 
-export function Dashboard({ onNavigate }: DashboardProps) {
-  const [currentLocation, setCurrentLocation] = useState<string>('Detecting...');
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-
-  useEffect(() => {
-    // Simulate location detection
-    setTimeout(() => {
-      setCurrentLocation('California, USA');
-    }, 2000);
-  }, []);
-
+export function Dashboard({ onGetHelpClick }: DashboardProps) {
   const stats = [
     {
       icon: Shield,
@@ -27,123 +16,154 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       subtitle: 'Emergency Recording',
       value: '56',
       unit: 'sec avg',
-      color: 'text-green-300'
+      description: 'Latest discreet recording activation time'
     },
     {
       icon: FileText,
       title: 'Legal Scenarios',
       subtitle: 'State-Specific Scripts',
       value: '2.47',
-      unit: 'k+',
-      color: 'text-blue-300'
+      unit: 'min',
+      description: 'Average time to find relevant legal guidance'
     },
     {
       icon: Users,
       title: 'Legal Rights',
-      subtitle: 'Know Your Rights',
+      subtitle: 'Community Shares',
       value: '123.3',
-      unit: 'k+',
-      color: 'text-purple-300'
+      unit: 'K+',
+      description: 'Cards shared this month across all users'
     }
   ];
 
   const quickActions = [
     {
-      icon: Shield,
-      title: 'Get Help Now',
-      description: 'Access legal scripts & emergency recording',
-      action: () => onNavigate('scripts'),
-      variant: 'primary' as const
+      title: 'Know Your Rights',
+      description: 'State-specific legal guidance',
+      icon: '⚖️',
+      action: () => onGetHelpClick()
     },
     {
-      icon: Users,
-      title: 'Trusted Contacts',
-      description: 'Manage emergency contacts',
-      action: () => onNavigate('contacts'),
-      variant: 'secondary' as const
+      title: 'Traffic Stop',
+      description: 'What to do when pulled over',
+      icon: '🚗',
+      action: () => onGetHelpClick()
     },
     {
-      icon: FileText,
-      title: 'Rights Cards',
-      description: 'Create & share legal rights',
-      action: () => onNavigate('cards'),
-      variant: 'secondary' as const
+      title: 'Police Questions',
+      description: 'How to respond to questioning',
+      icon: '❓',
+      action: () => onGetHelpClick()
+    },
+    {
+      title: 'Search Rights',
+      description: 'Understanding search and seizure',
+      icon: '🔍',
+      action: () => onGetHelpClick()
     }
   ];
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* Hero Section */}
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold text-white">Pocket Justice</h1>
-        <p className="text-blue-200 max-w-md mx-auto">
-          Your rights, right in your pocket. Get instant access to legal scripts and emergency tools.
-        </p>
+        <div className="flex items-center justify-center space-x-3 mb-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+            <Shield className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-white">Pocket Justice</h1>
+        </div>
         
-        {/* Location & Status */}
-        <div className="flex items-center justify-center space-x-4 text-sm text-blue-300">
-          <div className="flex items-center space-x-1">
-            <MapPin size={14} />
-            <span>{currentLocation}</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <Clock size={14} />
-            <span>Updated {lastUpdate.toLocaleTimeString()}</span>
-          </div>
+        <p className="text-lg text-white text-opacity-90 max-w-md mx-auto">
+          Your essential legal rights and emergency response tools, right in your pocket.
+        </p>
+
+        <div className="flex justify-center space-x-4 mt-6">
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={onGetHelpClick}
+            className="px-8"
+          >
+            Get Help Now
+          </Button>
+          
+          <Button
+            variant="secondary"
+            size="lg"
+            onClick={() => {/* Open emergency contacts */}}
+          >
+            Emergency Contacts
+          </Button>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="space-y-4">
-        {quickActions.map((action, index) => (
-          <Card
-            key={index}
-            className="p-6 cursor-pointer"
-            onClick={action.action}
-          >
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-white bg-opacity-10 rounded-full">
-                <action.icon size={24} className="text-blue-300" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-white">{action.title}</h3>
-                <p className="text-sm text-blue-200">{action.description}</p>
-              </div>
-              <div className="text-blue-300">
-                →
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Stats Cards */}
+      <div className="grid gap-6">
         {stats.map((stat, index) => (
-          <Card key={index} className="p-4 text-center">
-            <stat.icon size={24} className={`mx-auto mb-2 ${stat.color}`} />
-            <div className="space-y-1">
-              <div className="flex items-baseline justify-center space-x-1">
-                <span className="text-2xl font-bold text-white">{stat.value}</span>
-                <span className="text-xs text-blue-300">{stat.unit}</span>
+          <Card key={index} className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="feature-icon">
+                <stat.icon className="w-6 h-6" />
               </div>
-              <h4 className="text-sm font-medium text-white">{stat.title}</h4>
-              <p className="text-xs text-blue-300">{stat.subtitle}</p>
+              
+              <div className="flex-1">
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-2xl font-bold text-white">{stat.value}</span>
+                  <span className="text-sm text-white text-opacity-70">{stat.unit}</span>
+                </div>
+                <h3 className="font-semibold text-white">{stat.title}</h3>
+                <p className="text-sm text-white text-opacity-70">{stat.subtitle}</p>
+              </div>
             </div>
+            
+            <p className="text-xs text-white text-opacity-60 mt-3">
+              {stat.description}
+            </p>
           </Card>
         ))}
       </div>
 
-      {/* Emergency Notice */}
-      <Card className="p-6 bg-red-500 bg-opacity-20 border-red-400">
-        <div className="flex items-start space-x-3">
-          <AlertTriangle size={20} className="text-red-300 mt-0.5" />
-          <div>
-            <h3 className="font-semibold text-red-200 mb-2">Emergency Reminder</h3>
-            <p className="text-sm text-red-300">
-              In a real emergency, call 911 first. This app is designed to help you know your rights and document interactions safely.
-            </p>
-          </div>
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-xl font-semibold text-white mb-4">Quick Access</h2>
+        <div className="grid grid-cols-2 gap-4">
+          {quickActions.map((action, index) => (
+            <Card
+              key={index}
+              onClick={action.action}
+              className="p-4 cursor-pointer hover:scale-105"
+            >
+              <div className="text-center space-y-2">
+                <div className="text-2xl">{action.icon}</div>
+                <h3 className="font-medium text-white text-sm">{action.title}</h3>
+                <p className="text-xs text-white text-opacity-70">{action.description}</p>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart Visualization */}
+      <Card className="p-6">
+        <h3 className="font-semibold text-white mb-4">Usage Trends</h3>
+        <div className="flex items-end justify-between h-32 space-x-2">
+          {[40, 65, 45, 80, 95, 70, 85].map((height, index) => (
+            <div
+              key={index}
+              className="flex-1 bg-gradient-to-t from-purple-500 to-pink-400 rounded-t-sm opacity-80"
+              style={{ height: `${height}%` }}
+            />
+          ))}
+        </div>
+        <div className="flex justify-between text-xs text-white text-opacity-60 mt-2">
+          <span>Mon</span>
+          <span>Tue</span>
+          <span>Wed</span>
+          <span>Thu</span>
+          <span>Fri</span>
+          <span>Sat</span>
+          <span>Sun</span>
         </div>
       </Card>
     </div>

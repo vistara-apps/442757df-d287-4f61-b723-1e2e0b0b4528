@@ -1,34 +1,36 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { CardProps } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export function Card({
   variant = 'default',
   children,
   className = '',
-  onClick
+  onClick,
+  ...props
 }: CardProps) {
-  const baseClasses = 'glass-card transition-all duration-200';
+  const baseClasses = 'bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-lg transition-all duration-200';
   
-  const variantClasses = {
+  const variants = {
     default: 'hover:bg-opacity-15',
-    highlighted: 'bg-opacity-20 border-opacity-40 hover:bg-opacity-25'
+    highlighted: 'bg-opacity-20 border-opacity-30 shadow-lg'
   };
 
-  const Component = onClick ? 'button' : 'div';
+  const interactiveClasses = onClick ? 'cursor-pointer hover:scale-105' : '';
 
   return (
-    <Component
+    <div
+      onClick={onClick}
       className={cn(
         baseClasses,
-        variantClasses[variant],
-        onClick && 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50',
+        variants[variant],
+        interactiveClasses,
         className
       )}
-      onClick={onClick}
+      {...props}
     >
       {children}
-    </Component>
+    </div>
   );
 }

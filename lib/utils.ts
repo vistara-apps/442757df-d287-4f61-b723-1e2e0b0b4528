@@ -1,17 +1,22 @@
 import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
+  return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
+export function formatDate(date: string | Date): string {
+  return new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
+    minute: '2-digit'
+  });
+}
+
+export function generateId(): string {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
 
 export function getCurrentLocation(): Promise<GeolocationPosition> {
@@ -24,26 +29,29 @@ export function getCurrentLocation(): Promise<GeolocationPosition> {
     navigator.geolocation.getCurrentPosition(resolve, reject, {
       enableHighAccuracy: true,
       timeout: 10000,
-      maximumAge: 300000, // 5 minutes
+      maximumAge: 300000 // 5 minutes
     });
   });
 }
 
-export function getStateFromCoordinates(lat: number, lng: number): Promise<string> {
+export function detectStateFromCoordinates(lat: number, lng: number): Promise<string> {
   // This would typically use a reverse geocoding service
-  // For demo purposes, returning a default state
+  // For demo purposes, return a default state
   return Promise.resolve('California');
 }
 
-export function generateShareableCard(scenario: string, rights: string[]): string {
-  const card = {
-    title: `Know Your Rights: ${scenario}`,
-    rights: rights,
-    timestamp: new Date().toISOString(),
-    source: 'Pocket Justice App'
-  };
-  
-  return JSON.stringify(card, null, 2);
+export function shareContent(title: string, text: string, url?: string): Promise<void> {
+  if (navigator.share) {
+    return navigator.share({
+      title,
+      text,
+      url
+    });
+  } else {
+    // Fallback for browsers that don't support Web Share API
+    const shareText = `${title}\n\n${text}${url ? `\n\n${url}` : ''}`;
+    return navigator.clipboard.writeText(shareText);
+  }
 }
 
 export function validatePhoneNumber(phone: string): boolean {
@@ -54,6 +62,19 @@ export function validatePhoneNumber(phone: string): boolean {
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+}
+
+export function formatPhoneNumber(phone: string): string {
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  }
+  return phone;
+}
+
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
 }
 
 export function debounce<T extends (...args: any[]) => any>(
