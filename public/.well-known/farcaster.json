@@ -10,7 +10,7 @@
     "subtitle": "Built with Zara",
     "description": "Pocket Justice is a Base Mini App built with Zara.",
     "iconUrl": "https://0co.to/images/zara-2.png",
-    "homeUrl": "https://442757dfd2874f61b7231e2e0b0b4528-iref.vercel.app",
+    "homeUrl": "https://442757dfd2874f61b7231e2e0b0b4528-kz55.vercel.app",
     "splashImageUrl": "https://442757dfd2874f61b7231e2e0b0b4528-iref.vercel.app/splash.png",
     "splashBackgroundColor": "#000000",
     "heroImageUrl": "https://442757dfd2874f61b7231e2e0b0b4528-iref.vercel.app/image.png",
@@ -25,6 +25,6 @@
       "miniapp",
       "onchainkit"
     ],
-    "webhookUrl": "https://442757dfd2874f61b7231e2e0b0b4528-iref.vercel.app/api/webhook"
+    "webhookUrl": "https://442757dfd2874f61b7231e2e0b0b4528-kz55.vercel.app/api/webhook"
   }
 }
